@@ -1,17 +1,18 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
+import "dotenv/config";
+import app from "./app.js";
+import mongoose from "mongoose";
 
-const app = express();
-const PORT = process.env.PORT || 3001; // Render использует process.env.PORT
 
-app.use(cors());
-app.use(express.json());
+const { DB_HOST, PORT = 3001 } = process.env;
 
-app.get("/", (req, res) => {
-  res.send("Бэкенд работает!");
-});
-
-app.listen(PORT, () => {
-  console.log(`Сервер запущен на порту ${PORT}`);
-});
+mongoose
+  .connect(DB_HOST)
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server running. Use our API on port: ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.log(err.message);
+    process.exit(1);
+  });

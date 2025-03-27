@@ -2,8 +2,12 @@
   "name": "ids-backend",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "cross-env NODE_ENV=production node ./server.js",
+    "start:dev": "cross-env NODE_ENV=development nodemon ./server.js",
+    "lint": "eslint **/*.js",
+    "lint:fix": "eslint --fix **/*.js"
   },
   "repository": {
     "type": "git",
@@ -18,8 +22,18 @@
   "homepage": "https://github.com/HennadiiBu/ids-backend#readme",
   "description": "",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.13.0",
+    "multer": "^1.4.5-lts.2",
+    "nanoid": "^5.1.5",
+    "nodemon": "^3.1.9"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }
