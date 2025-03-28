@@ -16,11 +16,11 @@ const dataSchema = new mongoose.Schema({
   ttNetwork: { type: String },
   mrmMkk: { type: String },
   ttNumber: { type: String, required: true },
-  survey: { type: String, required: true },
-  surveyPage: { type: String, required: true },
-  surveyElement: { type: String, required: true },
-  surveyAnswer: { type: String, required: true },
-  surveyContentLink: { type: String, required: true },
+  survey: { type: String },
+  surveyPage: { type: String},
+  surveyElement: { type: String },
+  surveyAnswer: { type: String },
+  surveyContentLink: { type: String},
 }, { timestamps: true });
 
 const DataModel = mongoose.model("Data", dataSchema);
