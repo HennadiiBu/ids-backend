@@ -103,6 +103,9 @@ const uploadExcel = async (req, res) => {
       groupedData[visitDate][ttNumber] = [];
     }
 
+    // Добавляем поле verified к каждому ttNumber
+    obj.verified = false;
+
     groupedData[visitDate][ttNumber].push(obj);
   });
 
@@ -113,6 +116,7 @@ const uploadExcel = async (req, res) => {
   const insertedData = await DataModel.insertMany(
     Object.entries(groupedData).map(([visitDate, ttNumbers]) => ({
       visitDate,
+      verified: false, 
       ttNumbers,
     }))
   );

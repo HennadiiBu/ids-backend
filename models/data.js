@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-
 const dataSchema = new mongoose.Schema(
   {
     visitDate: { type: String, required: true },
@@ -27,6 +26,7 @@ const dataSchema = new mongoose.Schema(
             surveyElement: { type: String },
             surveyAnswer: { type: String },
             surveyContentLink: { type: String },
+            verified: { type: Boolean, default: false },
           },
           { _id: false }
         ),
