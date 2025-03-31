@@ -26,7 +26,8 @@ const dataSchema = new mongoose.Schema(
             surveyElement: { type: String },
             surveyAnswer: { type: String },
             surveyContentLink: { type: String },
-            verified: { type: Boolean, default: false },
+            verified: { type: Boolean, default: false  },
+            verifiedResult: { type: String },
           },
           { _id: false }
         ),

@@ -7,6 +7,8 @@ dataRouter.post("/upload", dataController.uploadMiddleware, dataController.uploa
 
 dataRouter.get("/", dataController.getData);
 
+dataRouter.get("/excel", dataController.getExcelFile);
+
 dataRouter.patch("/update", dataController.updateData);
 
 export default dataRouter;
