@@ -181,7 +181,7 @@ const getExcelFile = async (req, res) => {
       })
     );
 
-    console.log("Трансформированные данные:", transformedData);
+  
 
     // Создание Excel-файла в памяти
     const ws = xlsx.utils.json_to_sheet(transformedData);
@@ -214,6 +214,9 @@ const getData = async (req, res) => {
 };
 
 const updateData = async (req, res) => {
+  
+  console.log("Пришел PATCH-запрос на updateData");
+  console.log("Размер данных:", req.body.data.length);
   if (req.method !== "PATCH") {
     // Проверяем метод PATCH
     return res.status(405).json({ message: "Метод не поддерживается" });
@@ -222,42 +225,54 @@ const updateData = async (req, res) => {
   await dbConnect();
 
   try {
-    // Обрабатываем каждый элемент из массива newData
-    const updatePromises = req.body.data.map(async (item) => {
-      const { visitDate, ttNumbers } = item;
+    const batchSize = 100; // Размер пачки
+    const dataLength = req.body.data.length;
+    let batchIndex = 0;
 
-      // Проходим по всем ключам и обновляем данные
-      for (const [key, ttArray] of Object.entries(ttNumbers)) {
-        // Обновляем каждый элемент в массиве ttArray
-        for (const tt of ttArray) {
-          const result = await DataModel.findOneAndUpdate(
-            { visitDate, [`ttNumbers.${key}`]: { $exists: true } },
-            {
-              $set: {
-                [`ttNumbers.${key}.$[].verified`]: true,
-                [`ttNumbers.${key}.$[].verifiedResult`]: tt.verifiedResult,
+    while (batchIndex < dataLength) {
+      // Получаем часть данных для обновления
+      const batchData = req.body.data.slice(batchIndex, batchIndex + batchSize);
+
+      const updatePromises = batchData.map(async (item) => {
+        const { visitDate, ttNumbers } = item;
+
+        // Проходим по всем ключам и обновляем данные
+        for (const [key, ttArray] of Object.entries(ttNumbers)) {
+          // Обновляем каждый элемент в массиве ttArray
+          for (const tt of ttArray) {
+            const result = await DataModel.findOneAndUpdate(
+              { visitDate, [`ttNumbers.${key}`]: { $exists: true } },
+              {
+                $set: {
+                  [`ttNumbers.${key}.$[].verified`]: true,
+                  [`ttNumbers.${key}.$[].verifiedResult`]: tt.verifiedResult,
+                },
               },
-            },
-            { new: true }
-          );
-
-          if (!result) {
-            throw new Error(
-              `Не найдено для visitDate: ${visitDate} и key: ${key}`
+              { new: true }
             );
+
+            if (!result) {
+              throw new Error(
+                `Не найдено для visitDate: ${visitDate} и key: ${key}`
+              );
+            }
           }
         }
-      }
-    });
+      });
 
-    // Дожидаемся выполнения всех обновлений
-    await Promise.all(updatePromises);
+      // Дожидаемся выполнения всех обновлений для текущей пачки
+      await Promise.all(updatePromises);
 
+      // Увеличиваем индекс для следующей пачки
+      batchIndex += batchSize;
+    }
+   console.log("MongoDB ответил:", result);
     res.status(200).json({ message: "Успешно обновлено" });
   } catch (error) {
     res.status(500).json({ message: "Ошибка сервера", error });
   }
 };
+
 
 export default {
   uploadExcel: ctrlWrapper(uploadExcel),
